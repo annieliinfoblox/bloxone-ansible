@@ -17,3 +17,11 @@ plugin_routing:
             deprecation:
                 removal_version: 3.0.0
                 warning_text: Use infoblox.bloxone.ipam_ip_space_info instead.
+        b1_ipam_subnet:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_subnet instead.
+        b1_ipam_subnet_gather:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_subnet_info instead.
