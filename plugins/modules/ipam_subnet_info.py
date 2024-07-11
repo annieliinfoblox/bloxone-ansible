@@ -56,6 +56,9 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """  # noqa: E501
 
+EXAMPLE = r"""
+"""
+
 RETURN = r"""
 id:
     description:

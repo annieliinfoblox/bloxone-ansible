@@ -761,6 +761,49 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """  # noqa: E501
 
+EXAMPLES = r"""
+    - name: "Create a subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0"
+        cidr: "24"
+        space: "{{ ip_space_id }}"
+
+    - name: "Create a subnet with dhcp_config overridden"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0"
+        cidr: "24"
+        space: "{{ ip_space_id }}"
+        dhcp_config:
+            abandoned_reclaim_time: 3600
+        inheritance_sources:
+            dhcp_config:
+                lease_time:
+                    action: override
+
+                # The API currently requires all fields inside the inheritance config to be explicitly provided,
+                # or it fails with error 'The value of an inheritance action field is not valid'.
+                abandoned_reclaim_time:
+                    action: inherit
+                abandoned_reclaim_time_v6:
+                    action: inherit
+                allow_unknown:
+                      action: inherit
+                allow_unknown_v6:
+                    action: inherit
+                echo_client_id:
+                    action: inherit
+                filters:
+                    action: inherit
+                filters_v6:
+                    action: inherit
+                ignore_client_uid:
+                    action: inherit
+                ignore_list:
+                    action: inherit
+                lease_time_v6:
+                    action: inherit
+"""
+
 RETURN = r"""
 id:
     description:
@@ -2280,7 +2323,10 @@ item:
             returned: Always
         usage:
             description:
-                - "The usage is a combination of indicators, each tracking a specific associated use. Listed below are usage indicators with their meaning: usage indicator        | description ---------------------- | -------------------------------- I(IPAM)                 |  Subnet is managed in BloxOne DDI. I(DHCP)                 |  Subnet is served by a DHCP Host. I(DISCOVERED)           |  Subnet is discovered by some network discovery probe like Network Insight or NetMRI in NIOS."
+                - "The usage is a combination of indicators, each tracking a specific associated use. Listed below are usage indicators with their meaning:"
+                - "* I(IPAM): Subnet is managed in BloxOne DDI."
+                - "* I(DHCP): Subnet is served by a DHCP Host."
+                - "* I(DISCOVERED): Subnet is discovered by some network discovery probe like Network Insight or NetMRI in NIOS."
             type: list
             returned: Always
         utilization:
