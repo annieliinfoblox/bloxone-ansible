@@ -762,17 +762,24 @@ extends_documentation_fragment:
 """  # noqa: E501
 
 EXAMPLES = r"""
+    - name: "Create an ip space"
+      infoblox.bloxone.ipam_ip_space:
+        name: "my-ip-space"
+        state: "present"
+      register: ip_space
+
     - name: "Create a subnet"
       infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0"
-        cidr: "24"
-        space: "{{ ip_space_id }}"
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
 
     - name: "Create a subnet with dhcp_config overridden"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0"
         cidr: "24"
         space: "{{ ip_space_id }}"
+        state: "present"
         dhcp_config:
             abandoned_reclaim_time: 3600
         inheritance_sources:
@@ -802,6 +809,13 @@ EXAMPLES = r"""
                     action: inherit
                 lease_time_v6:
                     action: inherit
+
+    - name: "Delete a subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0"
+        cidr: "24"
+        space: "{{ ip_space.id }}"
+        state: "absent"
 """
 
 RETURN = r"""

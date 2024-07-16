@@ -8,23 +8,162 @@
     - ansible.builtin.set_fact:
         name: "test-ip-space-{{ 999999 | random | string }}"
 
-    # Basic tests for IP space
+    # Basic tests for Subnet
     - name: "Create an IP space"
       infoblox.bloxone.ipam_ip_space:
         name: "{{ name }}"
         state: "present"
       register: ip_space
+
+    - name: "Create a Subnet (check mode)"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+      check_mode: true
+      register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is changed
+          - subnet is not failed
+          - subnet_info.objects | length == 0
+
     - name: "Create a Subnet"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
         state: "present"
       register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+          - subnet_info.objects[0].id == subnet.id
+          - subnet_info.objects[0].name = subnet.object.name
 
-#  always:
-#    # Cleanup if the test fails
-#    - name: "Delete IP Space"
-#      infoblox.bloxone.ipam_ip_space:
-#        name: "{{ name }}"
-#        state: "absent"
-#      ignore_errors: true
+    - name: "Create a Subnet (idempotent)"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+      register: subnet
+    - assert:
+        that:
+          - subnet is not changed
+          - subnet is not failed
+
+    - name: "Delete a Subnet (check mode)"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "absent"
+      check_mode: true
+      register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is changed
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+
+    - name: "Delete a Subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "absent"
+      register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is changed
+          - subnet is not failed
+          - subnet_info.objects | length == 0
+
+    - name: "Delete a Subnet (idempotent)"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "absent"
+      register: subnet
+    - assert:
+        that:
+          - subnet is not changed
+          - subnet is not failed
+
+    - name: "Create a Subnet with DHCP config overridden"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+        dhcp_config:
+          lease_time: 3600
+        inheritance_sources:
+          dhcp_config:
+            lease_time:
+              action: override
+            # The API currently requires all fields inside the inheritance config to be explicitly provided,
+            # or it fails with error 'The value of an inheritance action field is not valid'.
+            abandoned_reclaim_time:
+              action: inherit
+            abandoned_reclaim_time_v6:
+              action: inherit
+            allow_unknown:
+              action: inherit
+            allow_unknown_v6:
+              action: inherit
+            echo_client_id:
+              action: inherit
+            filters:
+              action: inherit
+            filters_v6:
+              action: inherit
+            ignore_client_uid:
+              action: inherit
+            ignore_list:
+              action: inherit
+            lease_time_v6:
+              action: inherit
+      register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+          - subnet_info.objects[0].dhcp_config.lease_time == 3600
+          - subnet_info.objects[0].inheritance_sources.dhcp_config.lease_time.action == "override"
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "absent"
+      ignore_errors: true
+    - name: "Delete IP Space"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "absent"
+      ignore_errors: true

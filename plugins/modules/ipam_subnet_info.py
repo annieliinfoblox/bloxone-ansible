@@ -57,6 +57,7 @@ extends_documentation_fragment:
 """  # noqa: E501
 
 EXAMPLE = r"""
+
 """
 
 RETURN = r"""
