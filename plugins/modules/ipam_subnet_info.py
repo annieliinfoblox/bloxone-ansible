@@ -56,8 +56,24 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """  # noqa: E501
 
-EXAMPLE = r"""
+EXAMPLES = r"""
+  - name: Get Subnet information by ID
+    infoblox.bloxone.ipam_subnet_info:
+      id: "{{ subnet_id }}"
 
+  - name: Get Subnet information by filters (e.g. address)
+    infoblox.bloxone.ipam_subnet_info:
+      filters:
+        address: "10.0.0.0/24"
+
+  - name: Get Subnet information by raw filter query
+    infoblox.bloxone.ipam_subnet_info:
+      filter_query: "address=='10.0.0.0/24'"
+
+  # - name: Get Subnet information by tag filters
+  #   infoblox.bloxone.ipam_subnet_info:
+  #     tag_filters:
+  #       location: "site-1"
 """
 
 RETURN = r"""
