@@ -91,7 +91,7 @@ objects:
     contains:
         address:
             description:
-                - "The address of the subnet in the form &quot;a.b.c.d/n&quot; where the &quot;/n&quot; may be omitted. In this case, the CIDR value must be defined in the I(cidr) field. When reading, the I(address) field is always in the form &quot;a.b.c.d&quot;."
+                - "The address of the subnet in the form \"a.b.c.d/n\" where the \"/n\" may be omitted. In this case, the CIDR value must be defined in the I(cidr) field. When reading, the I(address) field is always in the form \"a.b.c.d\"."
             type: str
             returned: Always
         asm_config:
@@ -208,7 +208,7 @@ objects:
             description:
                 - "The prefix used in the generation of an FQDN."
                 - "When generating a name, DHCP server will construct the name in the format: [ddns-generated-prefix]-[address-text].[ddns-qualifying-suffix]. where address-text is simply the lease IP address converted to a hyphenated string."
-                - "Defaults to &quot;myhost&quot;."
+                - "Defaults to \"myhost\"."
             type: str
             returned: Always
         ddns_send_updates:
@@ -218,7 +218,7 @@ objects:
             returned: Always
         ddns_ttl_percent:
             description:
-                - "DDNS TTL value - to be calculated as a simple percentage of the lease&#x27;s lifetime, using the parameter&#x27;s value as the percentage. It is specified as a percentage (e.g. 25, 75). Defaults to unspecified."
+                - "DDNS TTL value - to be calculated as a simple percentage of the lease's lifetime, using the parameter's value as the percentage. It is specified as a percentage (e.g. 25, 75). Defaults to unspecified."
             type: float
             returned: Always
         ddns_update_on_renew:
@@ -406,7 +406,7 @@ objects:
             description:
                 - "The character to replace non-matching characters with, when hostname rewrite is enabled."
                 - "Any single ASCII character or no character if the invalid characters should be removed without replacement."
-                - "Defaults to &quot;-&quot;."
+                - "Defaults to \"-\"."
             type: str
             returned: Always
         hostname_rewrite_enabled:
@@ -418,8 +418,8 @@ objects:
         hostname_rewrite_regex:
             description:
                 - "The regex bracket expression to match valid characters."
-                - "Must begin with &quot;[&quot; and end with &quot;]&quot; and be a compilable POSIX regex."
-                - "Defaults to &quot;[^a-zA-Z0-9_.]&quot;."
+                - "Must begin with \"[\" and end with \"]\" and be a compilable POSIX regex."
+                - "Defaults to \"[^a-zA-Z0-9_.]\"."
             type: str
             returned: Always
         id:
@@ -765,7 +765,7 @@ objects:
                             returned: Always
                 ddns_enabled:
                     description:
-                        - "The inheritance configuration for I(ddns_enabled) field. Only action allowed is &#x27;inherit&#x27;."
+                        - "The inheritance configuration for I(ddns_enabled) field. Only action allowed is 'inherit'."
                     type: dict
                     returned: Always
                     contains:
@@ -1327,7 +1327,7 @@ objects:
                                 - "The inheritance setting."
                                 - "Valid values are:"
                                 - "* I(inherit): Use the inherited value."
-                                - "* I(block): Don&#x27;t use the inherited value."
+                                - "* I(block): Don't use the inherited value."
                                 - "Defaults to I(inherit)."
                             type: str
                             returned: Always
@@ -1343,7 +1343,7 @@ objects:
                                         - "The inheritance setting."
                                         - "Valid values are:"
                                         - "* I(inherit): Use the inherited value."
-                                        - "* I(block): Don&#x27;t use the inherited value."
+                                        - "* I(block): Don't use the inherited value."
                                         - "Defaults to I(inherit)."
                                     type: str
                                     returned: Always
@@ -1627,7 +1627,7 @@ objects:
                     returned: Always
                 static:
                     description:
-                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as I(static) &#x3D; I(used) - I(dynamic)."
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as I(static) = I(used) - I(dynamic)."
                     type: str
                     returned: Always
                 total:
