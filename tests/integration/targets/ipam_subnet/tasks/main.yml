@@ -26,7 +26,7 @@
       infoblox.bloxone.ipam_subnet_info:
         filters:
           address: "10.0.0.0/24"
-        register: subnet_info
+      register: subnet_info
     - assert:
         that:
           - subnet is changed
@@ -43,7 +43,7 @@
       infoblox.bloxone.ipam_subnet_info:
         filters:
           address: "10.0.0.0/24"
-        register: subnet_info
+      register: subnet_info
     - assert:
         that:
           - subnet is not failed
@@ -73,7 +73,7 @@
       infoblox.bloxone.ipam_subnet_info:
         filters:
           address: "10.0.0.0/24"
-        register: subnet_info
+      register: subnet_info
     - assert:
         that:
           - subnet is changed
@@ -90,7 +90,7 @@
       infoblox.bloxone.ipam_subnet_info:
         filters:
           address: "10.0.0.0/24"
-        register: subnet_info
+      register: subnet_info
     - assert:
         that:
           - subnet is changed
@@ -107,6 +107,87 @@
         that:
           - subnet is not changed
           - subnet is not failed
+
+    - name: "Create a Subnet with ASM config overridden"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+        asm_config:
+          asm_threshold: 80
+          forecast_period: 10
+        inheritance_sources:
+          asm_config:
+            asm_threshold:
+              action: override
+            enable:
+              action: inherit
+            enable_notification:
+              action: inherit
+            forecast_period:
+              action: override
+            growth_factor:
+              action: inherit
+            growth_type:
+              action: inherit
+            history:
+              action: inherit
+            min_total:
+              action: inherit
+            min_unused:
+              action: inherit
+            reenable_date:
+              action: inherit
+      register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+        register: subnet_info
+    - assert:
+        that:
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+          - subnet_info.objects[0].asm_config.asm_threshold == 80
+          - subnet_info.objects[0].asm_config.forecast_period == 10
+          - subnet_info.objects[0].inheritance_sources.asm_config.asm_threshold.action == "override"
+          - subnet_info.objects[0].inheritance_sources.asm_config.forecast_period.action == "override"
+
+    - name: "Create a Subnet with comment"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+        comment: "Comment."
+        register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+      register: subnet_info
+    - assert:
+        that:
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+          - subnet_info.objects[0].comment = subnet.object.comment
+
+    - name: "Create a Subnet with ddns_client_update set to server"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ ip_space.id }}"
+        state: "present"
+        ddns_client_update: "server"
+        register: subnet
+    - name: Get information about the Subnet
+      infoblox.bloxone.ipam_subnet_info:
+        filters:
+          address: "10.0.0.0/24"
+      register: subnet_info
+    - assert:
+        that:
+          - subnet is not failed
+          - subnet_info.objects | length == 1
+          - subnet_info.objects[0].ddns_client_update = subnet.object.ddns_client_update
 
     - name: "Create a Subnet with DHCP config overridden"
       infoblox.bloxone.ipam_subnet:
@@ -153,51 +234,6 @@
           - subnet_info.objects | length == 1
           - subnet_info.objects[0].dhcp_config.lease_time == 3600
           - subnet_info.objects[0].inheritance_sources.dhcp_config.lease_time.action == "override"
-
-    - name: "Create a Subnet with ASM config overridden"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
-        state: "present"
-        asm_config:
-          asm_threshold: 80
-          forecast_period: 10
-        inheritance_sources:
-          asm_config:
-            asm_threshold:
-              action: override
-            enable:
-              action: inherit
-            enable_notification:
-              action: inherit
-            forecast_period:
-              action: override
-            growth_factor:
-              action: inherit
-            growth_type:
-              action: inherit
-            history:
-              action: inherit
-            min_total:
-              action: inherit
-            min_unused:
-              action: inherit
-            reenable_date:
-              action: inherit
-      register: subnet
-    - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
-        filters:
-          address: "10.0.0.0/24"
-        register: subnet_info
-    - assert:
-        that:
-          - subnet is not failed
-          - subnet_info.objects | length == 1
-          - subnet_info.objects[0].asm_config.asm_threshold == 80
-          - subnet_info.objects[0].asm_config.forecast_period == 10
-          - subnet_info.objects[0].inheritance_sources.asm_config.asm_threshold.action == "override"
-          - subnet_info.objects[0].inheritance_sources.asm_config.forecast_period.action == "override"
 
   always:
     # Cleanup if the test fails
