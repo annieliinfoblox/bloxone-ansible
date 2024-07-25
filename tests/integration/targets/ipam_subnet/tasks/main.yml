@@ -438,12 +438,6 @@
 
   always:
     # Cleanup if the test fails
-    - name: "Delete Subnet"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
-        state: "absent"
-      ignore_errors: true
     - name: "Delete IP Space"
       infoblox.bloxone.ipam_ip_space:
         name: "{{ name }}"

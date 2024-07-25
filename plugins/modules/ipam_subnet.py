@@ -2467,7 +2467,7 @@ class SubnetModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"address=='{self.params['address']}' and space=='{self.params['space']}'"
+            filter = f"address=='{self.params['address']}' and space=='{self.params['space']}' and cidr=='{self.params['cidr']}'"
             resp = SubnetApi(self.client).list(filter=filter, inherit="full")
             if len(resp.results) == 1:
                 return resp.results[0]
