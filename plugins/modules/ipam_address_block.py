@@ -2475,7 +2475,9 @@ class AddressBlockModule(BloxoneAnsibleModule):
                 after=item,
             )
             result["object"] = item
-            result["id"] = self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            result["id"] = (
+                self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            )
         except ApiException as e:
             self.fail_json(msg=f"Failed to execute command: {e.status} {e.reason} {e.body}")
 
@@ -2487,18 +2489,21 @@ def main():
         id=dict(type="str", required=False),
         state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         address=dict(type="str"),
-        asm_config=dict(type="dict", options=dict(
-            asm_threshold=dict(type="int"),
-            enable=dict(type="bool"),
-            enable_notification=dict(type="bool"),
-            forecast_period=dict(type="int"),
-            growth_factor=dict(type="int"),
-            growth_type=dict(type="str"),
-            history=dict(type="int"),
-            min_total=dict(type="int"),
-            min_unused=dict(type="int"),
-            reenable_date=dict(type="str"),
-        )),
+        asm_config=dict(
+            type="dict",
+            options=dict(
+                asm_threshold=dict(type="int"),
+                enable=dict(type="bool"),
+                enable_notification=dict(type="bool"),
+                forecast_period=dict(type="int"),
+                growth_factor=dict(type="int"),
+                growth_type=dict(type="str"),
+                history=dict(type="int"),
+                min_total=dict(type="int"),
+                min_unused=dict(type="int"),
+                reenable_date=dict(type="str"),
+            ),
+        ),
         cidr=dict(type="int"),
         comment=dict(type="str"),
         ddns_client_update=dict(type="str"),
@@ -2510,28 +2515,39 @@ def main():
         ddns_ttl_percent=dict(type="float"),
         ddns_update_on_renew=dict(type="bool"),
         ddns_use_conflict_resolution=dict(type="bool"),
-        dhcp_config=dict(type="dict", options=dict(
-            abandoned_reclaim_time=dict(type="int"),
-            abandoned_reclaim_time_v6=dict(type="int"),
-            allow_unknown=dict(type="bool"),
-            allow_unknown_v6=dict(type="bool"),
-            echo_client_id=dict(type="bool"),
-            filters=dict(type="list", elements="str"),
-            filters_v6=dict(type="list", elements="str"),
-            ignore_client_uid=dict(type="bool"),
-            ignore_list=dict(type="list", elements="dict", options=dict(
+        dhcp_config=dict(
+            type="dict",
+            options=dict(
+                abandoned_reclaim_time=dict(type="int"),
+                abandoned_reclaim_time_v6=dict(type="int"),
+                allow_unknown=dict(type="bool"),
+                allow_unknown_v6=dict(type="bool"),
+                echo_client_id=dict(type="bool"),
+                filters=dict(type="list", elements="str"),
+                filters_v6=dict(type="list", elements="str"),
+                ignore_client_uid=dict(type="bool"),
+                ignore_list=dict(
+                    type="list",
+                    elements="dict",
+                    options=dict(
+                        type=dict(type="str"),
+                        value=dict(type="str"),
+                    ),
+                ),
+                lease_time=dict(type="int"),
+                lease_time_v6=dict(type="int"),
+            ),
+        ),
+        dhcp_options=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                group=dict(type="str"),
+                option_code=dict(type="str"),
+                option_value=dict(type="str"),
                 type=dict(type="str"),
-                value=dict(type="str"),
-            )),
-            lease_time=dict(type="int"),
-            lease_time_v6=dict(type="int"),
-        )),
-        dhcp_options=dict(type="list", elements="dict", options=dict(
-            group=dict(type="str"),
-            option_code=dict(type="str"),
-            option_value=dict(type="str"),
-            type=dict(type="str"),
-        )),
+            ),
+        ),
         header_option_filename=dict(type="str"),
         header_option_server_address=dict(type="str"),
         header_option_server_name=dict(type="str"),
@@ -2539,120 +2555,228 @@ def main():
         hostname_rewrite_enabled=dict(type="bool"),
         hostname_rewrite_regex=dict(type="str"),
         inheritance_parent=dict(type="str"),
-        inheritance_sources=dict(type="dict", options=dict(
-            asm_config=dict(type="dict", options=dict(
-                asm_enable_block=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                asm_growth_block=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                asm_threshold=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                forecast_period=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                history=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                min_total=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                min_unused=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-            )),
-            ddns_client_update=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_conflict_resolution_mode=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_enabled=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_hostname_block=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_ttl_percent=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_update_block=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_update_on_renew=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            ddns_use_conflict_resolution=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            dhcp_config=dict(type="dict", options=dict(
-                abandoned_reclaim_time=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                abandoned_reclaim_time_v6=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                allow_unknown=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                allow_unknown_v6=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                echo_client_id=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                filters=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                    value=dict(type="list", elements="str"),
-                )),
-                filters_v6=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                    value=dict(type="list", elements="str"),
-                )),
-                ignore_client_uid=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                ignore_list=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                lease_time=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-                lease_time_v6=dict(type="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-            )),
-            dhcp_options=dict(type="dict", options=dict(
-                action=dict(type="str"),
-                value=dict(type="list", elements="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-            )),
-            header_option_filename=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            header_option_server_address=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            header_option_server_name=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            hostname_rewrite_block=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-        )),
+        inheritance_sources=dict(
+            type="dict",
+            options=dict(
+                asm_config=dict(
+                    type="dict",
+                    options=dict(
+                        asm_enable_block=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        asm_growth_block=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        asm_threshold=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        forecast_period=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        history=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        min_total=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        min_unused=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                    ),
+                ),
+                ddns_client_update=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_conflict_resolution_mode=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_enabled=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_hostname_block=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_ttl_percent=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_update_block=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_update_on_renew=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                ddns_use_conflict_resolution=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                dhcp_config=dict(
+                    type="dict",
+                    options=dict(
+                        abandoned_reclaim_time=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        abandoned_reclaim_time_v6=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        allow_unknown=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        allow_unknown_v6=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        echo_client_id=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        filters=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                                value=dict(type="list", elements="str"),
+                            ),
+                        ),
+                        filters_v6=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                                value=dict(type="list", elements="str"),
+                            ),
+                        ),
+                        ignore_client_uid=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        ignore_list=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        lease_time=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                        lease_time_v6=dict(
+                            type="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                    ),
+                ),
+                dhcp_options=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                        value=dict(
+                            type="list",
+                            elements="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                    ),
+                ),
+                header_option_filename=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                header_option_server_address=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                header_option_server_name=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                hostname_rewrite_block=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+            ),
+        ),
         name=dict(type="str"),
         parent=dict(type="str"),
         space=dict(type="str"),
         tags=dict(type="dict"),
-        threshold=dict(type="dict", options=dict(
-            enabled=dict(type="bool"),
-            high=dict(type="int"),
-            low=dict(type="int"),
-        )),
-
+        threshold=dict(
+            type="dict",
+            options=dict(
+                enabled=dict(type="bool"),
+                high=dict(type="int"),
+                low=dict(type="int"),
+            ),
+        ),
     )
 
     module = AddressBlockModule(
