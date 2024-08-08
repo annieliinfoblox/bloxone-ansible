@@ -33,10 +33,11 @@
           - subnet_info.objects | length == 1
           - subnet_info.objects[0].name == subnet.object.name
 
-    - name: Get Subnet information by filters (address)
+    - name: Get Subnet information by filters
       infoblox.bloxone.ipam_subnet_info:
         filters:
           address: "10.0.0.0/24"
+          space: "{{ ip_space.id }}"
       register: subnet_info
     - assert:
         that:
@@ -45,7 +46,7 @@
 
     - name: Get Subnet information by filter query
       infoblox.bloxone.ipam_subnet_info:
-        filters_query: "address=='10.0.0.0/24'"
+        filters_query: "address=='10.0.0.0/24' and space=='{{ ip_space.id }}'"
         register: subnet_info
     - assert:
         that:
@@ -64,12 +65,6 @@
 
   always:
     # Cleanup if the test fails
-    - name: "Delete Subnet"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
-        state: "absent"
-      ignore_errors: true
     - name: "Delete IP Space"
       infoblox.bloxone.ipam_ip_space:
         name: "{{ name }}"
