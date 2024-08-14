@@ -60,6 +60,7 @@ class BloxoneAnsibleModule(AnsibleModule):
 
         return update_body
 
+
 def bloxone_client_common_argument_spec():
     return dict(
         api_key=dict(

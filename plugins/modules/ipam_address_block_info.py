@@ -1668,7 +1668,11 @@ class AddressBlockInfoModule(BloxoneAnsibleModule):
 
         filter_str = None
         if self.params["filters"] is not None:
-            filter_str = f"address=='{self.params['filters']['address']}' and space=='{self.params['filters']['space']}' and cidr=={self.params['filters']['cidr']}"
+            filter_str = (
+                f"address=='{self.params['filters']['address']}' "
+                + f"and space=='{self.params['filters']['space']}' "
+                + f"and cidr=={self.params['filters']['cidr']}"
+            )
         elif self.params["filter_query"] is not None:
             filter_str = self.params["filter_query"]
 
