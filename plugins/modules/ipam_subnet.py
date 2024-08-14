@@ -2429,6 +2429,10 @@ class SubnetModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(SubnetModule, self).__init__(*args, **kwargs)
 
+        if "/" in self.params["address"]:
+            self.params["address"], netmask = self.params["address"].split("/")
+            self.params["cidr"] = int(netmask)
+
         exclude = ["state", "csp_url", "api_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Subnet.from_dict(self._payload_params)
@@ -2467,7 +2471,7 @@ class SubnetModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"address=='{self.params['address']}' and space=='{self.params['space']}' and cidr=='{self.params['cidr']}'"
+            filter = f"address=='{self.params['address']}' and space=='{self.params['space']}' and cidr=={self.params['cidr']}"
             resp = SubnetApi(self.client).list(filter=filter, inherit="full")
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -2487,7 +2491,10 @@ class SubnetModule(BloxoneAnsibleModule):
         if self.check_mode:
             return None
 
-        resp = SubnetApi(self.client).update(id=self.existing.id, body=self.payload, inherit="full")
+        update_body = self.payload
+        update_body = self.validate_readonly_on_update(self.existing, update_body, ["address", "space", "cidr"])
+
+        resp = SubnetApi(self.client).update(id=self.existing.id, body=update_body, inherit="full")
         return resp.result.model_dump(by_alias=True, exclude_none=True)
 
     def delete(self):

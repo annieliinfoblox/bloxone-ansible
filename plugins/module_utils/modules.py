@@ -52,6 +52,13 @@ class BloxoneAnsibleModule(AnsibleModule):
     def is_changed(self, existing, payload):
         return _is_changed(existing, payload)
 
+    def validate_readonly_on_update(self, existing, update_body, fields):
+        for field in fields:
+            if getattr(update_body, field) != getattr(existing, field):
+                self.fail_json(msg=f"{field} cannot be updated")
+            setattr(update_body, field, None)
+
+        return update_body
 
 def bloxone_client_common_argument_spec():
     return dict(
@@ -105,7 +112,9 @@ def _is_changed(existing, payload):
     changed = False
     for k, v in payload.items():
         if v is not None:
-            if isinstance(v, dict):
+            if k not in existing:
+                changed = True
+            elif isinstance(v, dict):
                 changed = _is_changed(existing[k], v)
             elif existing[k] != v:
                 changed = True
